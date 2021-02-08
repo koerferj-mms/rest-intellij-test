@@ -1,0 +1,165 @@
+### Fetch CSRF token
+GET {{baseUrl}}/v1/sap-retail/API_CUSTOMER_RETURN_SRV/?sap-language=EN
+Accept: application/json
+x-api-key: {{apiKey}}
+X-CSRF-Token: fetch
+Authorization: Basic {{sapUser}} {{sapPassword}}
+Content-Type: application/json
+
+> {%
+client.test("CSRF token present", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.headers.valueOf("x-csrf-token") !== "", "x-csrf-token not present or empty");
+
+  client.global.set("csrfToken", response.headers.valueOf("x-csrf-token"));
+});
+%}
+
+### Create customer return order
+POST {{baseUrl}}/v1/sap-retail/API_CUSTOMER_RETURN_SRV/A_CustomerReturn?sap-language=EN
+Accept: application/json
+x-api-key: {{apiKey}}
+x-csrf-Token: {{csrfToken}}
+Content-Type: application/json
+
+{
+    "d": {
+        "CustomerReturnType": "ZRHO",
+        "SalesOrganization": "N601",
+        "DistributionChannel": "11",
+        "OrganizationDivision": "01",
+        "SoldToParty": "1990020",
+        "SDDocumentReason": "RET",
+        "PurchaseOrderByCustomer": "COM_NUMBER",
+        "RequestedDeliveryDate": "/Date(1592431200000)/",
+        "to_Item": [
+            {
+                "MaterialByCustomer": "1404372",
+                "RequestedQuantity": "1",
+                "ProductionPlant": "3103",
+                "StorageLocation": "WH-B",
+                "ReturnReason": "N01",
+                "CustRetItmFollowUpActivity": "0014",
+                "ReturnsMaterialHasBeenReceived": "X",
+                "ReturnsRefundType": "",
+                "ReturnsRefundProcgMode": "I",
+                "RetMatlInspResultCode": "QUBB",
+                "ProductIsInspectedAtCustSite": "X",
+                "ReferenceSDDocument": "7000024346",
+                "ReferenceSDDocumentItem": "1",
+                "to_PricingElement": {
+                    "results": [
+                        {
+                            "ConditionType": "ZC12",
+                            "ConditionRateValue": "500.00",
+                            "ConditionCurrency": "EUR",
+                            "ConditionQuantity": "1",
+                            "ConditionQuantityUnit": "PC"
+                        }
+                    ]
+                }
+            }
+        ],
+        "to_Partner": [
+            {
+                "PartnerFunction": "AG",
+                "Customer": "1990020",
+                "Name1": "Inge",
+                "Name2": "Müller",
+                "Name3": "von",
+                "Name4": "zu",
+                "Country": "DE",
+                "PostalCode1": "85051",
+                "PostalCode2": "12345",
+                "PoBox": "4711",
+                "PoPoxLocation": "Ort Postfach",
+                "City1": "Ingolstadt",
+                "City2": "Rothenturm",
+                "TownshipCode": "Bayern",
+                "CountryCode": "ITc",
+                "TelNumber1": "0121-66666",
+                "TelNumber2": "0121-77777",
+                "FaxNumber": "0121-55555",
+                "TtxNumber": "88888",
+                "TlxNumber": "99999",
+                "Language": "DE",
+                "TranspZone": "DE",
+                "HouseNumber": "43",
+                "TaxJurCode": "Steuerstandort",
+                "PersNumber": "15",
+                "Floor": "56",
+                "Street": "Bolognesestraße",
+                "Email": "inge@tester.com"
+            },
+            {
+                "PartnerFunction": "RE",
+                "Customer": "1990020",
+                "Name1": "Ingo",
+                "Name2": "Müller",
+                "Name3": "von",
+                "Name4": "zu",
+                "Country": "DE",
+                "PostalCode1": "85051",
+                "PostalCode2": "12345",
+                "PoBox": "4711",
+                "PoPoxLocation": "Ort Postfach",
+                "City1": "Ingolstadt",
+                "City2": "Rothenturm",
+                "TownshipCode": "Bayern",
+                "CountryCode": "ITc",
+                "TelNumber1": "0121-66667",
+                "TelNumber2": "0121-77778",
+                "FaxNumber": "0121-55556",
+                "TtxNumber": "88889",
+                "TlxNumber": "99990",
+                "Language": "DE",
+                "TranspZone": "DE",
+                "HouseNumber": "43",
+                "TaxJurCode": "Steuerstandort",
+                "PersNumber": "15",
+                "Floor": "56",
+                "Street": "Bolognesestraße",
+                "Email": "ingo@tester.com"
+            },
+            {
+                "PartnerFunction": "WE",
+                "Customer": "1990020",
+                "Name1": "Nudlerine",
+                "Name2": "Vollkornnudel",
+                "Name3": "von",
+                "Name4": "zu",
+                "Country": "DE",
+                "PostalCode1": "85055",
+                "PostalCode2": "12345",
+                "PoBox": "4711",
+                "PoPoxLocation": "Ort Postfach",
+                "City1": "Ingolstadt",
+                "TownshipCode": "Bayern",
+                "CountryCode": "ITc",
+                "TelNumber1": "0121-66667",
+                "TelNumber2": "0121-77778",
+                "FaxNumber": "0121-55556",
+                "TtxNumber": "88889",
+                "TlxNumber": "99990",
+                "Language": "DE",
+                "TranspZone": "DE",
+                "HouseNumber": "43",
+                "TaxJurCode": "Steuerstandort",
+                "PersNumber": "15",
+                "Floor": "56",
+                "Street": "Nudelstraße",
+                "Email": "nudeltester@nudelmail.com"
+            }
+        ]
+    }
+}
+
+> {%
+client.test("Customer return created successfully", function() {
+  client.assert(response.status === 201, "Response status is not 201");
+});
+%}
+
+###
+
+
